@@ -2,9 +2,6 @@ import os
 import praw
 from feedgen.feed import FeedGenerator
 from flask import Flask, Response
-from dotenv import load_dotenv
-
-load_dotenv()  
 
 app = Flask(__name__)
 
