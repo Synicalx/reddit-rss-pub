@@ -13,13 +13,15 @@ reddit = praw.Reddit(
     user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
 )
 
+app_domain = os.getenv('APP_DOMAIN')
+
 subreddits = ['python', 'programming']  # etc etc
 
 @app.route('/rss')
 def generate_rss():
     fg = FeedGenerator()
     fg.title('Reddit RSS Feed')
-    fg.link(href='http://example.com/rss', rel='self')
+    fg.link(href=app_domain, rel='self')
     fg.description('RSS feed of posts from specified subreddits')
 
     for subreddit in subreddits:
