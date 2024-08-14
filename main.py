@@ -19,20 +19,11 @@ subreddits = ['python', 'programming']  # etc etc
 
 @app.route('/rss')
 def generate_rss():
-    fg = FeedGenerator()
-    fg.title('Reddit RSS Feed')
-    fg.link(href=app_domain, rel='self')
-    fg.description('RSS feed of posts from specified subreddits')
-
-    for subreddit in subreddits:
-        for post in reddit.subreddit(subreddit).hot(limit=5): 
-            fe = fg.add_entry()
-            fe.title(post.title)
-            fe.link(href=post.url)
-            fe.description(post.selftext)
-
-    rss_feed = fg.rss_str(pretty=True)
-    return Response(rss_feed, mimetype='application/rss+xml')
+    posts = {}
+    for subred in subreddits:
+        for submission in reddit.subreddit(subred).hot(limit=5):
+            posts[submission.title] = submission.url
+    return posts
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
