@@ -18,11 +18,33 @@ app_domain = os.getenv('APP_DOMAIN')
 subreddits = ['python', 'programming']  # etc etc
 
 @app.route('/rss')
-def generate_rss():
+def gen_rss():
+    return construct_feed()
+
+def construct_feed():
+    fg = FeedGenerator()
+    fg.title('Reddit Feed')
+    fg.link(href=f'{app_domain}/rss', rel='self')
+    fg.description('Reddit feed for various subreddits')
+
+    for sub in subreddits:
+        fg = add_sub_to_feed(sub, fg)
+
+    return fg.rss_str(pretty=True)
+
+def add_sub_to_feed(sub, fg):
+    content = get_posts(sub)
+    for title, url in content.items():
+        fe = fg.add_entry()
+        fe.title(title)
+        fe.link(href=url)
+    return fg
+
+def get_posts(target):
     posts = {}
-    for subred in subreddits:
-        for submission in reddit.subreddit(subred).hot(limit=5):
-            posts[submission.title] = submission.url
+
+    for submission in reddit.subreddit(target).hot(limit=5):
+        posts[submission.title] = submission.url
     return posts
 
 if __name__ == '__main__':
