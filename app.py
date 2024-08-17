@@ -49,6 +49,7 @@ def gen_custom_sub(subreddit):
         fe = fg.add_entry()
         fe.title(title)
         fe.link(href=url)
+        fe.guid(url, permalink=True)
 
     rss_feed = fg.rss_str(pretty=True)
 
