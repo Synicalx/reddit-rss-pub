@@ -16,6 +16,15 @@ reddit = praw.Reddit(
 
 app_domain = os.getenv('APP_DOMAIN')
 
+@app.route('/')
+def home():
+    """
+    The homepage of the app.
+
+    :return: Some instructions.
+    """
+    return 'Use /rss/<subreddit> to get an RSS feed for a subreddit.'
+
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):
     """
@@ -41,7 +50,7 @@ def gen_custom_sub(subreddit):
 
     # Clear the posts we found
     found_sub.clear_posts()
-    
+
     # Return the RSS feed as an XML response
     return Response(rss_feed, mimetype='application/rss+xml')
 
