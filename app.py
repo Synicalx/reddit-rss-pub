@@ -2,7 +2,7 @@ import os
 import praw
 import subreddit_fetch
 from feedgen.feed import FeedGenerator
-from prawcore.exceptions import NotFound
+from prawcore.exceptions import NotFound, Forbidden
 from flask import Flask, Response
 
 app = Flask(__name__)
@@ -21,13 +21,16 @@ def subreddit_exists(subreddit, reddit):
     """
     Check if a subreddit exists.
 
+    :param subreddit: The name of the subreddit to check.
     :param reddit: The Reddit instance to use.
-    :return: True if the subreddit exists, False otherwise.
+    :return: True if the subreddit exists and we can access it, False otherwise.
     """
     try:
         reddit.subreddits.search_by_name(subreddit, exact=True)
         return True
     except NotFound:
+        return False
+    except Forbidden:
         return False
     except Exception:
         return False
@@ -38,21 +41,20 @@ def gen_custom_sub(subreddit):
     Get the 25 hottest posts from a subreddit.
 
     :param subreddit: The name of the subreddit to fetch posts from.
-    :return: An XML response containing the RSS feed.
+    :return: An XML response containing the RSS feed, or a non-200 if theres an issue
     """
     sub_exists = subreddit_exists(subreddit, reddit)
     if not sub_exists:
         return Response(f"Subreddit {subreddit} does not exist", status=404)
 
     found_sub = subreddit_fetch.subreddit_fetch(subreddit, reddit)
+    hot_posts = found_sub.get_hot_posts()
 
     # Create a FeedGenerator object
     fg = FeedGenerator()
     fg.title(f"Reddit - r/ {subreddit}")
     fg.link(href=f"https://www.reddit.com/r/{subreddit}/", rel='alternate')
     fg.description(f"RSS feed generated from the {subreddit} subreddit.")
-
-    hot_posts = found_sub.get_hot_posts()
     
     for title, url in hot_posts.items():
         fe = fg.add_entry()
