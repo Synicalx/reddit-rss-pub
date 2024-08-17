@@ -25,11 +25,6 @@ def home():
     """
     return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.'
 
-@app.errorhandler(404)
-def page_not_found(e):
-    # You can return a custom template or message here
-    return "Sorry, this page does not exist.", 404
-
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):
     """
@@ -62,6 +57,13 @@ def gen_custom_sub(subreddit):
 
     # Return the RSS feed as an XML response
     return Response(rss_feed, mimetype='application/rss+xml')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """
+    Handle all other routes.
+    """
+    return "Sorry, this page does not exist.", 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
