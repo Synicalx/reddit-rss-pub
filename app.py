@@ -37,7 +37,7 @@ def gen_custom_sub(subreddit):
 
     # Create a FeedGenerator object
     fg = FeedGenerator()
-    fg.title(f"RSS Feed for {subreddit}")
+    fg.title(f"Reddit - r/ {subreddit}")
     fg.link(href=f"https://www.reddit.com/r/{subreddit}/", rel='alternate')
     fg.description(f"RSS feed generated from the {subreddit} subreddit.")
 
