@@ -15,20 +15,21 @@ reddit = praw.Reddit(
 
 app_domain = os.getenv('APP_DOMAIN')
 
-subreddits = ['python', 'programming']  # etc etc
-
 @app.route('/rss')
 def gen_rss():
-    return construct_feed()
+    return construct_feed("python")
 
-def construct_feed():
+@app.route('/rss/<subreddit>')
+def gen_custom_sub(subreddit):
+    return construct_feed(subreddit)
+
+def construct_feed(sub):
     fg = FeedGenerator()
     fg.title('Reddit Feed')
     fg.link(href=f'{app_domain}/rss', rel='self')
     fg.description('Reddit feed for various subreddits')
 
-    for sub in subreddits:
-        fg = add_sub_to_feed(sub, fg)
+    fg = add_sub_to_feed(sub, fg)
 
     return fg.rss_str(pretty=True)
 
