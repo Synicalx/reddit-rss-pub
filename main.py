@@ -22,6 +22,7 @@ def gen_custom_sub(subreddit):
     Get the 25 hottest posts from a subreddit.
 
     :param subreddit: The name of the subreddit to fetch posts from.
+    :return: An XML response containing the RSS feed.
     """
     found_sub = subreddit_fetch.subreddit_fetch(subreddit, reddit)
 
