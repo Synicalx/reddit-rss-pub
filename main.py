@@ -18,6 +18,11 @@ app_domain = os.getenv('APP_DOMAIN')
 
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):
+    """
+    Get the 25 hottest posts from a subreddit.
+
+    :param subreddit: The name of the subreddit to fetch posts from.
+    """
     found_sub = subreddit_fetch.subreddit_fetch(subreddit, reddit)
     return found_sub.posts
 
