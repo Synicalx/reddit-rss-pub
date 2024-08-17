@@ -9,7 +9,7 @@ class subreddit_fetch:
     def __init__(self, name, reddit) -> None:
         self.name = name
         self.reddit = reddit
-        self.posts = self.get_hot_posts(self.name, self.reddit)
+        self.exists = self.subreddit_exists(self.reddit)
 
     def get_hot_posts(self, subreddit_name, reddit):
         """
@@ -30,3 +30,16 @@ class subreddit_fetch:
         Clear the posts we found.
         """
         self._posts = None
+
+    def subreddit_exists(self, reddit):
+        """
+        Check if a subreddit exists.
+
+        :param reddit: The Reddit instance to use.
+        :return: True if the subreddit exists, False otherwise.
+        """
+        try:
+            reddit.subreddits.search_by_name(self.name, exact=True)
+            return True
+        except Exception:
+            return False

@@ -25,6 +25,11 @@ def home():
     """
     return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.'
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # You can return a custom template or message here
+    return "Sorry, this page does not exist.", 404
+
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):
     """
@@ -34,6 +39,10 @@ def gen_custom_sub(subreddit):
     :return: An XML response containing the RSS feed.
     """
     found_sub = subreddit_fetch.subreddit_fetch(subreddit, reddit)
+    if found_sub.exists:
+        found_sub.posts = found_sub.get_hot_posts(subreddit, reddit)
+    else:
+        return "Sorry, this sub does not exist."
 
     # Create a FeedGenerator object
     fg = FeedGenerator()
