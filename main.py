@@ -39,6 +39,9 @@ def gen_custom_sub(subreddit):
 
     rss_feed = fg.rss_str(pretty=True)
 
+    # Clear the posts we found
+    found_sub.clear_posts()
+    
     # Return the RSS feed as an XML response
     return Response(rss_feed, mimetype='application/rss+xml')
 

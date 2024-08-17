@@ -24,3 +24,9 @@ class subreddit_fetch:
         for submission in self.reddit.subreddit(subreddit_name).hot(limit=25):
             hot_posts[submission.title] = submission.url
         return hot_posts
+
+    def clear_posts(self):
+        """
+        Clear the posts we found.
+        """
+        self._posts = None
