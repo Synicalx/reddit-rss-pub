@@ -9,19 +9,17 @@ class subreddit_fetch:
     def __init__(self, name, reddit) -> None:
         self.name = name
         self.reddit = reddit
-        self.exists = self.subreddit_exists(self.reddit)
 
-    def get_hot_posts(self, subreddit_name, reddit):
+    def get_hot_posts(self):
         """
         Get the 25 hottest posts from a subreddit. 
 
-        :param subreddit_name: The name of the subreddit to fetch posts from.
-        :param reddit: The Reddit instance to use.
+        :param self: The subreddit_fetch object.
         :return: A dictionary of post titles keys and URLs.
         """
         hot_posts = {}
 
-        for submission in self.reddit.subreddit(subreddit_name).hot(limit=25):
+        for submission in self.reddit.subreddit(self.name).hot(limit=25):
             hot_posts[submission.title] = submission.url
         return hot_posts
 
@@ -30,16 +28,3 @@ class subreddit_fetch:
         Clear the posts we found.
         """
         self._posts = None
-
-    def subreddit_exists(self, reddit):
-        """
-        Check if a subreddit exists.
-
-        :param reddit: The Reddit instance to use.
-        :return: True if the subreddit exists, False otherwise.
-        """
-        try:
-            reddit.subreddits.search_by_name(self.name, exact=True)
-            return True
-        except Exception:
-            return False

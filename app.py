@@ -2,6 +2,7 @@ import os
 import praw
 import subreddit_fetch
 from feedgen.feed import FeedGenerator
+from prawcore.exceptions import NotFound
 from flask import Flask, Response
 
 app = Flask(__name__)
@@ -16,6 +17,21 @@ reddit = praw.Reddit(
 
 app_domain = os.getenv('APP_DOMAIN')
 
+def subreddit_exists(subreddit, reddit):
+    """
+    Check if a subreddit exists.
+
+    :param reddit: The Reddit instance to use.
+    :return: True if the subreddit exists, False otherwise.
+    """
+    try:
+        reddit.subreddits.search_by_name(subreddit, exact=True)
+        return True
+    except NotFound:
+        return False
+    except Exception:
+        return False
+
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):
     """
@@ -24,11 +40,11 @@ def gen_custom_sub(subreddit):
     :param subreddit: The name of the subreddit to fetch posts from.
     :return: An XML response containing the RSS feed.
     """
+    sub_exists = subreddit_exists(subreddit, reddit)
+    if not sub_exists:
+        return Response(f"Subreddit {subreddit} does not exist", status=404)
+
     found_sub = subreddit_fetch.subreddit_fetch(subreddit, reddit)
-    if found_sub.exists:
-        found_sub.posts = found_sub.get_hot_posts(subreddit, reddit)
-    else:
-        return "Sorry, this sub does not exist."
 
     # Create a FeedGenerator object
     fg = FeedGenerator()
@@ -36,7 +52,9 @@ def gen_custom_sub(subreddit):
     fg.link(href=f"https://www.reddit.com/r/{subreddit}/", rel='alternate')
     fg.description(f"RSS feed generated from the {subreddit} subreddit.")
 
-    for title, url in found_sub.posts.items():
+    hot_posts = found_sub.get_hot_posts()
+    
+    for title, url in hot_posts.items():
         fe = fg.add_entry()
         fe.title(title)
         fe.link(href=url)
