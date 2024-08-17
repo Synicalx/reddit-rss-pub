@@ -24,7 +24,22 @@ def gen_custom_sub(subreddit):
     :param subreddit: The name of the subreddit to fetch posts from.
     """
     found_sub = subreddit_fetch.subreddit_fetch(subreddit, reddit)
-    return found_sub.posts
+
+    # Create a FeedGenerator object
+    fg = FeedGenerator()
+    fg.title(f"RSS Feed for {subreddit}")
+    fg.link(href=f"https://www.reddit.com/r/{subreddit}/", rel='alternate')
+    fg.description(f"RSS feed generated from the {subreddit} subreddit.")
+
+    for title, url in found_sub.posts.items():
+        fe = fg.add_entry()
+        fe.title(title)
+        fe.link(href=url)
+
+    rss_feed = fg.rss_str(pretty=True)
+
+    # Return the RSS feed as an XML response
+    return Response(rss_feed, mimetype='application/rss+xml')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
