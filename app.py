@@ -23,7 +23,7 @@ def home():
 
     :return: Some instructions.
     """
-    return 'Use /rss/<subreddit> to get an RSS feed for a subreddit.'
+    return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.'
 
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):
