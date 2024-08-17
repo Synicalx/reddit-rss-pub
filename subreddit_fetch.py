@@ -1,6 +1,9 @@
 class subreddit_fetch:
     """
     A class to represent a subreddit and its posts.
+
+    :param name: The name of the subreddit.
+    :param reddit: The Reddit instance to use.
     """
 
     def __init__(self, name, reddit) -> None:
