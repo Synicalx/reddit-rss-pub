@@ -9,11 +9,11 @@ Barebones flask app, it works by generating a feed of the 25 'hot' posts from a 
 
 In theory, you can run this from wherever you like (in my case, DigitalOcean) and just set a few env vars;
 
-```
-APP_DOMAIN - the domain (including subdomain if applicable) you wish to run this from
-REDDIT_CLIENT_ID - the client ID from your personal reddit key pair
-REDDIT_CLIENT_SECRET - the secret from your personal reddit key pair
-```
+| Var | |
+|-----|-|
+| APP_DOMAIN | the domain (including subdomain if applicable) you wish to run this from |
+| REDDIT_CLIENT_ID | the client ID from your personal reddit key pair |
+| REDDIT_CLIENT_SECRET | the secret from your personal reddit key pair |
 
 For setting up your API keys, start -> [here](https://old.reddit.com/wiki/api)
 
