@@ -19,10 +19,13 @@ class SubredditFetch:
         :param self: The subreddit_fetch object.
         :return: A dictionary of post titles keys and URLs.
         """
-
-        for submission in self.reddit.subreddit(self.name).hot(limit=25):
-            self.hot_posts[submission.title] = submission.url
-        return self.hot_posts
+        try:
+            for submission in self.reddit.subreddit(self.name).hot(limit=25):
+                self.hot_posts[submission.title] = submission.url
+            return self.hot_posts
+        except Exception as e:
+            print("Error fetching posts: ", e)
+            return None
 
     def clear_posts(self):
         """

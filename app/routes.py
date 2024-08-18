@@ -41,6 +41,8 @@ def gen_custom_sub(subreddit):
 
     found_sub = SubredditFetch(subreddit, reddit)
     hot_posts = found_sub.get_hot_posts()
+    if hot_posts is None:
+        return Response(f"Error fetching posts for {subreddit}", status=500)
 
     # Create a FeedGenerator object
     fg = FeedGenerator()
