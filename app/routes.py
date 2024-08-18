@@ -1,3 +1,4 @@
+"""All the Flask routes are here."""
 from feedgen.feed import FeedGenerator
 from flask import Response
 from . import app, reddit, subreddit_exists
@@ -7,6 +8,8 @@ from .subreddit_fetch import SubredditFetch
 def page_not_found(error):
     """
     Handle all other routes.
+
+    :param error: The error we are handling.
     """
     return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.', error
 

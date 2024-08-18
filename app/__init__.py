@@ -1,3 +1,4 @@
+"""All the core functionality of the app is here."""
 import os
 import praw
 from flask import Flask
@@ -31,7 +32,5 @@ def subreddit_exists(subreddit, praw_instance):
         return False
     except Forbidden:
         return False
-    except Exception:
-        return False
-    
+
 from . import routes
