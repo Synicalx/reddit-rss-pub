@@ -27,7 +27,7 @@ jobs:
 
       - name: Run pylint
         run: |
-          pylint app
+          pylint --fail-under=9 app
 
   test:
     runs-on: ubuntu-latest

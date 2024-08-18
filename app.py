@@ -1,9 +1,9 @@
 import os
 import praw
-import subreddit_fetch
-from feedgen.feed import FeedGenerator
 from prawcore.exceptions import NotFound, Forbidden
+from feedgen.feed import FeedGenerator
 from flask import Flask, Response
+import subreddit_fetch
 
 app = Flask(__name__)
 
@@ -12,7 +12,8 @@ reddit = praw.Reddit(
     client_id=os.getenv('REDDIT_CLIENT_ID'),
     client_secret=os.getenv('REDDIT_CLIENT_SECRET'),
     # To avoid getting blocked (in theory)
-    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
+        AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
 )
 
 app_domain = os.getenv('APP_DOMAIN')
@@ -55,7 +56,7 @@ def gen_custom_sub(subreddit):
     fg.title(f"Reddit - r/ {subreddit}")
     fg.link(href=f"https://www.reddit.com/r/{subreddit}/", rel='alternate')
     fg.description(f"RSS feed generated from the {subreddit} subreddit.")
-    
+
     for title, url in hot_posts.items():
         fe = fg.add_entry()
         fe.title(title)
@@ -71,7 +72,7 @@ def gen_custom_sub(subreddit):
     return Response(rss_feed, mimetype='application/rss+xml')
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found():
     """
     Handle all other routes.
     """
