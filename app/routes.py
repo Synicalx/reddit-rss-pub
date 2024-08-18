@@ -1,7 +1,6 @@
 """All the Flask routes are here."""
-from feedgen.feed import FeedGenerator
 from flask import Response
-from . import app, reddit, subreddit_exists
+from . import app, reddit, subreddit_exists, generate_feed
 from .subreddit_fetch import SubredditFetch
 
 @app.errorhandler(404)
@@ -51,6 +50,7 @@ def gen_custom_sub(subreddit):
 def gen_custom_sub_no_self(subreddit):
     """
     Get the 25 hottest posts from a subreddit, no self posts.
+    If there are more than 76 self posts, we'll end up with less than 25 posts.
 
     :param subreddit: The name of the subreddit to fetch posts from.
     :return: An XML response containing the RSS feed.
@@ -65,33 +65,3 @@ def gen_custom_sub_no_self(subreddit):
         return Response(f"Error fetching posts for {subreddit}", status=500)
 
     return generate_feed(subreddit, hot_posts, found_sub)
-
-def generate_feed(subreddit, posts, source_subreddit):
-    """
-    Generate an RSS feed from a dictionary of posts.
-
-    :param subreddit: The name of the subreddit.
-    :param posts: A dictionary of post titles and URLs.
-    :param source_subreddit: The SubredditFetch object.
-
-    :return: An XML response containing the RSS feed.
-    """
-    # Create a FeedGenerator object
-    fg = FeedGenerator()
-    fg.title(f"Reddit - r/ {subreddit}")
-    fg.link(href=f"https://www.reddit.com/r/{subreddit}/", rel='alternate')
-    fg.description(f"RSS feed generated from the {subreddit} subreddit.")
-
-    for title, url in posts.items():
-        fe = fg.add_entry()
-        fe.title(title)
-        fe.link(href=url)
-        fe.guid(url, permalink=True)
-
-    rss_feed = fg.rss_str(pretty=True)
-
-    # Clear the posts we found
-    source_subreddit.clear_posts()
-
-    # Return the RSS feed as an XML response
-    return Response(rss_feed, mimetype='application/rss+xml')
