@@ -19,7 +19,7 @@ def healthcheck():
     """
     A healthcheck route to ensure the app is running.
 
-    :return: A string response.
+    :return: A string response and status code.
     """
     if reddit:
         testsub = reddit.subreddit("redditdev")

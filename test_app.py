@@ -3,10 +3,20 @@ from app import app
 
 @pytest.fixture
 def client():
+    """
+    Create a test client for our app.
+
+    :return: a test client
+    """
     with app.test_client() as client:
         yield client
 
 def test_gen_custom_sub(client):
+    """
+    Tests our key routes in the app.
+
+    :return: None
+    """
     # Test with a valid subreddit
     response = client.get('/rss/funny')
     assert response.status_code == 200
