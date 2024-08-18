@@ -22,13 +22,18 @@ def test_gen_custom_sub(client):
     assert response.status_code == 200
     assert b'funny' in response.data
 
-    # Test with another subreddit
-    response = client.get('/rss/python')
+    # Test with another subreddit with no self
+    response = client.get('/rss/noself/python')
     assert response.status_code == 200
     assert b'python' in response.data
 
     # Test with an invalid URL
     response = client.get('/rss/asdfasgawertf')
+    assert response.status_code == 404
+    assert b'does not exist' in response.data
+
+    # Test with an invalid URL, noself endpoint
+    response = client.get('/rss/noself/asdfasgawertf')
     assert response.status_code == 404
     assert b'does not exist' in response.data
 
