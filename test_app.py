@@ -21,3 +21,8 @@ def test_gen_custom_sub(client):
     response = client.get('/rss/asdfasgawertf')
     assert response.status_code == 404
     assert b'does not exist' in response.data
+
+    # Test our healthcheck endpoint
+    response = client.get('/healthcheck')
+    assert response.status_code == 200
+    assert b'reddit' in response.data

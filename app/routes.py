@@ -11,7 +11,21 @@ def page_not_found(error):
 
     :param error: The error we are handling.
     """
-    return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.', error
+    print(error)
+    return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.', 404
+
+@app.route('/healthcheck')
+def healthcheck():
+    """
+    A healthcheck route to ensure the app is running.
+
+    :return: A string response.
+    """
+    if reddit:
+        testsub = reddit.subreddit("redditdev")
+        return testsub.title, 200
+
+    return 'Reddit instance not created', 500
 
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):
