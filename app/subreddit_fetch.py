@@ -1,4 +1,4 @@
-class subreddit_fetch:
+class SubredditFetch:
     """
     A class to represent a subreddit and its posts.
 
