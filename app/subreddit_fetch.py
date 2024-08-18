@@ -27,6 +27,24 @@ class SubredditFetch:
             print("Error fetching posts: ", e)
             return None
 
+    def get_hot_no_self_posts(self):
+        """
+        Get the 25 hottest posts from a subreddit, excluding self posts.
+
+        :return: A dictionary with post titles as keys and URLs as values.
+        """
+        hot_posts = {}
+        try:
+            for submission in self.reddit.subreddit(self.name).hot(limit=100):
+                if not submission.is_self:
+                    hot_posts[submission.title] = submission.url
+                if len(hot_posts) >= 25:
+                    break
+            return hot_posts
+        except Exception as e:
+            print("Error fetching posts:", e)
+            return {}
+
     def clear_posts(self):
         """
         Clear the posts we found.
