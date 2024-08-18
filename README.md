@@ -45,3 +45,7 @@ For setting up your API keys, start -> [here](https://old.reddit.com/wiki/api)
 IMO the easiest way to run this, and the way I do, is to use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-platform). You can hook up your repo from in your DO dashboard, point to the internal port (5000), set the env vars noted above, and then set a domain. 
 
 Something similar should be possible elsewhere, such as Heroku, but is untested.
+
+## Will it / can it do XYZ
+
+Yes, no, I don't know, maybe. If you can think of a feature that is missing, but that also might be useful (and there's a lot of those) please create an issue or open a PR.
