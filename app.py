@@ -72,7 +72,7 @@ def gen_custom_sub(subreddit):
     return Response(rss_feed, mimetype='application/rss+xml')
 
 @app.errorhandler(404)
-def page_not_found():
+def page_not_found(error):
     """
     Handle all other routes.
     """
