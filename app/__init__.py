@@ -1,7 +1,8 @@
 """All the core functionality of the app is here."""
 import os
 import praw
-from flask import Flask
+from feedgen.feed import FeedGenerator
+from flask import Flask, Response
 from prawcore.exceptions import NotFound, Forbidden
 
 # We're going to reuse the Reddit instance in a lot of places
@@ -32,5 +33,35 @@ def subreddit_exists(subreddit, praw_instance):
         return False
     except Forbidden:
         return False
+
+def generate_feed(subreddit, posts, source_subreddit):
+    """
+    Generate an RSS feed from a dictionary of posts.
+
+    :param subreddit: The name of the subreddit.
+    :param posts: A dictionary of post titles and URLs.
+    :param source_subreddit: The SubredditFetch object.
+
+    :return: An XML response containing the RSS feed.
+    """
+    # Create a FeedGenerator object
+    fg = FeedGenerator()
+    fg.title(f"Reddit - r/ {subreddit}")
+    fg.link(href=f"https://www.reddit.com/r/{subreddit}/", rel='alternate')
+    fg.description(f"RSS feed generated from the {subreddit} subreddit.")
+
+    for title, url in posts.items():
+        fe = fg.add_entry()
+        fe.title(title)
+        fe.link(href=url)
+        fe.guid(url, permalink=True)
+
+    rss_feed = fg.rss_str(pretty=True)
+
+    # Clear the posts we found
+    source_subreddit.clear_posts()
+
+    # Return the RSS feed as an XML response
+    return Response(rss_feed, mimetype='application/rss+xml')
 
 from . import routes

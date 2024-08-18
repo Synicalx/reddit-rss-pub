@@ -18,6 +18,17 @@ What it does not do;
 - Consider any previous feeds, de-duplication needs to be handled by your reader based on the URL/GUID (some readers do this, such as Inoreader!).
 - Rank or re-arrange posts. We use reddits ‘hot’ sorting method for this, which is generally the default view of most subreddits anyway.
 
+## Endpoints
+
+As it stands now, this exposes 2 useful endpoints;
+
+| Endpoint | Purpose |
+|----------|---------|
+| $domain/rss/$subreddit | Returns 25 'hot' posts from $subreddit |
+| $domain/rss/noself/$subreddit *  | Returns 25 'hot' posts, but no self posts from $subreddit |
+
+\* _In some cases, might be less than 25 posts_
+
 ## How
 
 In theory, you can run this from wherever you like (in my case, DigitalOcean) and just set a few env vars;
