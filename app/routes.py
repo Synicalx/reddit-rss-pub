@@ -8,7 +8,7 @@ def page_not_found(error):
     """
     Handle all other routes.
     """
-    return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.', 404
+    return 'Use /rss/_subreddit_ to get an RSS feed for a subreddit.', error
 
 @app.route('/rss/<subreddit>')
 def gen_custom_sub(subreddit):

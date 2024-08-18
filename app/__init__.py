@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 app_domain = os.getenv('APP_DOMAIN')
 
-def subreddit_exists(subreddit, reddit):
+def subreddit_exists(subreddit, praw_instance):
     """
     Check if a subreddit exists.
 
@@ -25,7 +25,7 @@ def subreddit_exists(subreddit, reddit):
     :return: True if the subreddit exists and we can access it, False otherwise.
     """
     try:
-        reddit.subreddits.search_by_name(subreddit, exact=True)
+        praw_instance.subreddits.search_by_name(subreddit, exact=True)
         return True
     except NotFound:
         return False
@@ -34,4 +34,4 @@ def subreddit_exists(subreddit, reddit):
     except Exception:
         return False
     
-from . import routes  # Import routes to register them with the app
+from . import routes
