@@ -62,7 +62,7 @@ def gen_sfw_sub(subreddit):
     if not found_sub.is_sfw:
         return Response(f"Subreddit {subreddit} is NSFW", status=403)
 
-    hot_posts = found_sub.get_hot_posts()
+    hot_posts = found_sub.get_hot_sfw_posts()
     if hot_posts is None:
         return Response(f"Error fetching posts for {subreddit}", status=500)
 
