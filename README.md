@@ -1,5 +1,5 @@
 # reddit-rss-pub
-DIY Reddit RSS feed using BYO API keys. 
+Reddit RSS feed using BYO API keys. This turns subreddits into RSS feeds.
 
 Disclaimer: I have no idea what I'm doing when it comes to building feeds so consider this still under development.
 
