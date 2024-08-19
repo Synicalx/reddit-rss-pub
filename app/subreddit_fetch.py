@@ -46,7 +46,30 @@ class SubredditFetch:
             print("Error fetching posts:", e)
             return {}
 
+    def get_hot_sfw_posts(self):
+        """
+        Get the 25 hottest posts from a subreddit, excluding NSFW posts.
+
+        :return: A dictionary with post titles as keys and URLs as values.
+        """
+        hot_posts = {}
+        try:
+            for submission in self.reddit.subreddit(self.name).hot(limit=100):
+                if not submission.is_over_18:
+                    hot_posts[submission.title] = submission.url
+                if len(hot_posts) >= 25:
+                    break
+            return hot_posts
+        except Exception as e:
+            print("Error fetching posts:", e)
+            return {}
+
     def is_sub_sfw(self):
+        """
+        True or False if the subreddit is safe for work.
+
+        :return: True if the subreddit is safe for work, False otherwise.
+        """
         if self.reddit.subreddit(self.name).over18:
             return False
         return True
