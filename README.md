@@ -25,6 +25,7 @@ As it stands now, this exposes 2 useful endpoints;
 | Endpoint | Purpose |
 |----------|---------|
 | $domain/rss/$subreddit | Returns 25 'hot' posts from $subreddit |
+| $domain/rss/sfw/$subreddit | Returns 25 'hot' posts from $subreddit ONLY if the subreddit is SFW |
 | $domain/rss/noself/$subreddit *  | Returns 25 'hot' posts, but no self posts from $subreddit |
 
 \* _In some cases, might be less than 25 posts_

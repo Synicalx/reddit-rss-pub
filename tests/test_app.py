@@ -41,3 +41,8 @@ def test_gen_custom_sub(client):
     response = client.get('/healthcheck')
     assert response.status_code == 200
     assert b'reddit' in response.data
+
+    # Test with an valid NSFW URL, SFW endpoint
+    response = client.get('/rss/sfw/gonewild')
+    assert response.status_code == 403
+    assert b'is NSFW' in response.data

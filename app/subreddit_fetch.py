@@ -11,6 +11,7 @@ class SubredditFetch:
         self.name = name
         self.reddit = reddit
         self.hot_posts = {}
+        self.is_sfw = self.is_sub_sfw()
 
     def get_hot_posts(self):
         """
@@ -44,6 +45,11 @@ class SubredditFetch:
         except Exception as e:
             print("Error fetching posts:", e)
             return {}
+
+    def is_sub_sfw(self):
+        if self.reddit.subreddit(self.name).over18:
+            return False
+        return True
 
     def clear_posts(self):
         """

@@ -45,6 +45,28 @@ def gen_custom_sub(subreddit):
 
     return generate_feed(subreddit, hot_posts, found_sub)
 
+@app.route('/rss/sfw/<subreddit>')
+def gen_sfw_sub(subreddit):
+    """
+    Get the 25 hottest posts from a SFW subreddit.
+    If it's NSFW, 403.
+
+    :param subreddit: The name of the subreddit to fetch posts from.
+    :return: An XML response containing the RSS feed, 403 if NSFW.
+    """
+    sub_exists = subreddit_exists(subreddit, reddit)
+    if not sub_exists:
+        return Response(f"Subreddit {subreddit} does not exist", status=404)
+
+    found_sub = SubredditFetch(subreddit, reddit)
+    if not found_sub.is_sfw:
+        return Response(f"Subreddit {subreddit} is NSFW", status=403)
+
+    hot_posts = found_sub.get_hot_posts()
+    if hot_posts is None:
+        return Response(f"Error fetching posts for {subreddit}", status=500)
+
+    return generate_feed(subreddit, hot_posts, found_sub)
 
 @app.route('/rss/noself/<subreddit>')
 def gen_custom_sub_no_self(subreddit):
