@@ -50,3 +50,7 @@ Something similar should be possible elsewhere, such as Heroku, but is untested.
 ## Will it / can it do XYZ
 
 Yes, no, I don't know, maybe. If you can think of a feature that is missing, but that also might be useful (and there's a lot of those) please create an issue or open a PR.
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
