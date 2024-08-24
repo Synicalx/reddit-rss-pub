@@ -11,7 +11,7 @@ What it does do:
 
 - Connects to the reddit API to GET posts and subreddits
 - Returns a mostly well structured RSS XML blob
-- Ignores NSFW/SFW status of subreddits, there is no filtering
+- Is aware of the SFW/NSFW status of subreddits, and lets you decide what to do about that
 
 What it does not do;
 
