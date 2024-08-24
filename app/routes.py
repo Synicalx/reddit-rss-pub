@@ -1,7 +1,7 @@
 """All the Flask routes are here."""
 from flask import Response
-from . import app, reddit, subreddit_exists, generate_feed
-from .subreddit_fetch import SubredditFetch
+from . import app, generate_feed, construct_reddit_instance
+
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -20,33 +20,29 @@ def healthcheck():
 
     :return: A string response and status code.
     """
-    if reddit:
-        testsub = reddit.subreddit("redditdev")
-        return testsub.title, 200
+    if app:
+        return 'App is running?', 200
 
     return 'Reddit instance not created', 500
 
-@app.route('/rss/<subreddit>')
-def gen_custom_sub(subreddit):
+@app.route('/rss/<key_id>/<subreddit>')
+def gen_custom_sub(key_id, subreddit):
     """
     Get the 25 hottest posts from a subreddit.
 
     :param subreddit: The name of the subreddit to fetch posts from.
     :return: An XML response containing the RSS feed.
     """
-    sub_exists = subreddit_exists(subreddit, reddit)
-    if not sub_exists:
-        return Response(f"Subreddit {subreddit} does not exist", status=404)
+    target_sub = construct_reddit_instance(key_id, subreddit)
 
-    found_sub = SubredditFetch(subreddit, reddit)
-    hot_posts = found_sub.get_hot_posts()
+    hot_posts = target_sub.get_hot_posts()
     if hot_posts is None:
         return Response(f"Error fetching posts for {subreddit}", status=500)
 
-    return generate_feed(subreddit, hot_posts, found_sub)
+    return generate_feed(subreddit, hot_posts, target_sub)
 
-@app.route('/rss/sfw/<subreddit>')
-def gen_sfw_sub(subreddit):
+@app.route('/rss/<key_id>/sfw/<subreddit>')
+def gen_sfw_sub(key_id, subreddit):
     """
     Get the 25 hottest posts from a SFW subreddit.
     If it's NSFW, 403.
@@ -54,22 +50,19 @@ def gen_sfw_sub(subreddit):
     :param subreddit: The name of the subreddit to fetch posts from.
     :return: An XML response containing the RSS feed, 403 if NSFW.
     """
-    sub_exists = subreddit_exists(subreddit, reddit)
-    if not sub_exists:
-        return Response(f"Subreddit {subreddit} does not exist", status=404)
+    target_sub = construct_reddit_instance(key_id, subreddit)
 
-    found_sub = SubredditFetch(subreddit, reddit)
-    if not found_sub.is_sfw:
+    if not target_sub.is_sfw:
         return Response(f"Subreddit {subreddit} is NSFW", status=403)
 
-    hot_posts = found_sub.get_hot_sfw_posts()
+    hot_posts = target_sub.get_hot_sfw_posts()
     if hot_posts is None:
         return Response(f"Error fetching posts for {subreddit}", status=500)
 
-    return generate_feed(subreddit, hot_posts, found_sub)
+    return generate_feed(subreddit, hot_posts, target_sub)
 
-@app.route('/rss/noself/<subreddit>')
-def gen_custom_sub_no_self(subreddit):
+@app.route('/rss/<key_id>/noself/<subreddit>')
+def gen_custom_sub_no_self(key_id, subreddit):
     """
     Get the 25 hottest posts from a subreddit, no self posts.
     If there are more than 76 self posts, we'll end up with less than 25 posts.
@@ -77,13 +70,10 @@ def gen_custom_sub_no_self(subreddit):
     :param subreddit: The name of the subreddit to fetch posts from.
     :return: An XML response containing the RSS feed.
     """
-    sub_exists = subreddit_exists(subreddit, reddit)
-    if not sub_exists:
-        return Response(f"Subreddit {subreddit} does not exist", status=404)
+    target_sub = construct_reddit_instance(key_id, subreddit)
 
-    found_sub = SubredditFetch(subreddit, reddit)
-    hot_posts = found_sub.get_hot_no_self_posts()
+    hot_posts = target_sub.get_hot_no_self_posts()
     if hot_posts is None:
         return Response(f"Error fetching posts for {subreddit}", status=500)
 
-    return generate_feed(subreddit, hot_posts, found_sub)
+    return generate_feed(subreddit, hot_posts, target_sub)

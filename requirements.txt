@@ -4,3 +4,4 @@ feedgen
 gunicorn
 pytest
 pylint
+supabase

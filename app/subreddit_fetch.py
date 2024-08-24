@@ -1,4 +1,7 @@
 """A class representing a subreddit and its posts."""
+import praw
+from prawcore.exceptions import NotFound
+
 class SubredditFetch:
     """
     A class to represent a subreddit and its posts.
@@ -7,11 +10,56 @@ class SubredditFetch:
     :param reddit: The Reddit instance to use.
     """
 
-    def __init__(self, name, reddit) -> None:
+    def __init__(self, name, client_id, client_secret) -> None:
         self.name = name
-        self.reddit = reddit
         self.hot_posts = {}
-        self.is_sfw = self.is_sub_sfw()
+        self.reddit = praw.Reddit(
+            client_id=client_id,
+            client_secret=client_secret,
+            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
+                AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+        )
+        self._exists = None
+        self._is_sfw = None
+
+    @property
+    def exists(self):
+        """
+        Check if the subreddit exists.
+
+        :return: True if the subreddit exists, False otherwise.
+        """
+        if self._exists is None:
+            self._exists = self.subreddit_exists()
+        return self._exists
+
+    @property
+    def is_sfw(self):
+        """
+        Check if the subreddit is safe for work.
+
+        return: True if the subreddit is safe for work, False otherwise.
+        """
+        if self._is_sfw is None:
+            self._is_sfw = self.is_sub_sfw()
+        return self._is_sfw
+
+    def subreddit_exists(self) -> bool:
+        """
+        Check if the subreddit exists.
+
+        :return: True if the subreddit exists, False otherwise.
+        """
+        try:
+            id = self.reddit.subreddit(self.name).id
+            if id:
+                return True
+            return False
+        except NotFound:
+            return False
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
 
     def get_hot_posts(self):
         """

@@ -4,35 +4,56 @@ import praw
 from feedgen.feed import FeedGenerator
 from flask import Flask, Response
 from prawcore.exceptions import NotFound, Forbidden
-
-# We're going to reuse the Reddit instance in a lot of places
-reddit = praw.Reddit(
-    client_id=os.getenv('REDDIT_CLIENT_ID'),
-    client_secret=os.getenv('REDDIT_CLIENT_SECRET'),
-    # To avoid getting blocked (in theory)
-    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
-        AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
-)
+from supabase import create_client, Client
+from .subreddit_fetch import SubredditFetch
 
 app = Flask(__name__)
-
 app_domain = os.getenv('APP_DOMAIN')
 
-def subreddit_exists(subreddit, praw_instance):
-    """
-    Check if a subreddit exists.
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-    :param subreddit: The name of the subreddit to check.
-    :param reddit: The Reddit instance to use.
-    :return: True if the subreddit exists and we can access it, False otherwise.
+def get_reddit_key(reddit_id):
+    """
+    Setup the Reddit instance.
+
+    :return: A Reddit instance, or None.
     """
     try:
-        praw_instance.subreddits.search_by_name(subreddit, exact=True)
-        return True
-    except NotFound:
-        return False
-    except Forbidden:
-        return False
+        response = (
+            supabase
+            .table('user_data')
+            .select('reddit_key')
+            .eq('reddit_id', reddit_id)
+            .execute()
+        )
+        if response.data and len(response.data) > 0:
+            return response.data[0]['reddit_key']
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
+
+def construct_reddit_instance(client_id, subreddit):
+    """
+    Create a SubredditFetch object.
+
+    :param client_id: The Reddit client ID.
+    :param subreddit: The name of the subreddit.
+    :retrun: A SubredditFetch object.
+    """
+    reddit_api_key = get_reddit_key(client_id)
+    if reddit_api_key is None:
+        return Response(f"Reddit API key not found for {client_id}", status=404)
+
+    target_sub = SubredditFetch(subreddit, client_id, reddit_api_key)
+
+    if not target_sub.exists:
+        return Response(f"Subreddit {subreddit} does not exist", status=404)
+
+    return target_sub
 
 def generate_feed(subreddit, posts, source_subreddit):
     """
