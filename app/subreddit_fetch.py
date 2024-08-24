@@ -51,8 +51,8 @@ class SubredditFetch:
         :return: True if the subreddit exists, False otherwise.
         """
         try:
-            id = self.reddit.subreddit(self.name).id
-            if id:
+            sub_id = self.reddit.subreddit(self.name).id
+            if sub_id:
                 return True
             return False
         except NotFound:
