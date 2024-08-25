@@ -1,6 +1,6 @@
 """All the Flask routes are here."""
 import supabase
-from flask import request, render_template, redirect, url_for
+from flask import request, render_template, Response
 from . import app, generate_feed, construct_reddit_instance, insert_reddit_key, generate_hash
 
 
@@ -30,30 +30,30 @@ def healthcheck():
 def add_reddit_key():
     """
     Show a form to input Reddit key ID and Reddit key, and handle form submissions.
+
+    :return: A rendered template with a message.
     """
     if request.method == 'POST':
         reddit_id = request.form.get('reddit_id')
         reddit_key = request.form.get('reddit_key')
         if not reddit_id or not reddit_key:
-            return render_template('add_reddit_key.html', message="Please provide both Reddit Key ID and Reddit Key.")
-        
+            return render_template('add_reddit_key.html',
+                                   message="Please provide both Reddit Key ID and Reddit Key.")
+
         try:
             hashed_id = generate_hash(reddit_id, reddit_key)
             response_code = insert_reddit_key(hashed_id, reddit_id, reddit_key)
-            # Check if the insertion was successful
+
             if response_code == 201:
-                return render_template('add_reddit_key.html', message="Reddit key added successfully!")
-            return render_template('add_reddit_key.html', message="Failed to add Reddit key.")
+                return render_template('add_reddit_key.html', 
+                                       message="Reddit key added successfully!")
+            return render_template('add_reddit_key.html', 
+                                   message="Failed to add Reddit key.")
         except Exception as e:
             print(f"An error occurred: {e}")
-            return render_template('add_reddit_key.html', message="An error occurred while processing the request.")
-
-    # GET request: Render the form page
+            return render_template('add_reddit_key.html',
+                                   message="An error occurred while processing the request.")
     return render_template('add_reddit_key.html', message=None)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
 
 @app.route('/rss/<key_id>/<subreddit>')
 def gen_custom_sub(key_id, subreddit):

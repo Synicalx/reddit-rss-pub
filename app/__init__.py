@@ -4,7 +4,6 @@ import hashlib
 import hmac
 from feedgen.feed import FeedGenerator
 from flask import Flask, Response
-from prawcore.exceptions import NotFound, Forbidden
 from supabase import create_client, Client
 from .subreddit_fetch import SubredditFetch
 
@@ -16,10 +15,24 @@ SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def generate_hash(api_key_id: str, secret_key: str) -> str:
-    """Generate SHA-256 hash of the API key ID using the user-provided secret key."""
+    """
+    Generate SHA-256 hash of the API key ID using the user-provided secret key.
+    
+    :param api_key_id: The API key ID to hash.
+    :param secret_key: The secret key to use for hashing.
+    :return: The SHA-256 hash of the API key ID.
+    """
     return hmac.new(secret_key.encode(), api_key_id.encode(), hashlib.sha256).hexdigest()
 
 def insert_reddit_key(hashed_id: str, reddit_id: str, reddit_key: str):
+    """
+    Insert a Reddit key, its associated Reddit ID, and hash into the Supabase database.
+
+    :param hashed_id: The hashed Reddit key ID.
+    :param reddit_id: The Reddit ID.
+    :param reddit_key: The Reddit key.
+    :return: The status code of the response.
+    """
     response = (
         supabase
         .table('user_data')
@@ -54,7 +67,7 @@ def get_reddit_key(input_hash: str):
         print(f"An error occurred: {e}")
         return None
 
-def construct_reddit_instance(input_hash, subreddit):
+def construct_reddit_instance(input_hash: str, subreddit: str) -> SubredditFetch:
     """
     Create a SubredditFetch object.
 
@@ -74,7 +87,7 @@ def construct_reddit_instance(input_hash, subreddit):
 
     return target_sub
 
-def generate_feed(subreddit, posts, source_subreddit):
+def generate_feed(subreddit: str, posts: dict, source_subreddit: SubredditFetch) -> Response:
     """
     Generate an RSS feed from a dictionary of posts.
 
