@@ -5,3 +5,5 @@ gunicorn
 pytest
 pylint
 supabase
+hashlib
+hmac

@@ -1,6 +1,7 @@
 """All the core functionality of the app is here."""
 import os
-import praw
+import hashlib
+import hmac
 from feedgen.feed import FeedGenerator
 from flask import Flask, Response
 from prawcore.exceptions import NotFound, Forbidden
@@ -14,29 +15,46 @@ SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def get_reddit_key(reddit_id):
-    """
-    Setup the Reddit instance.
+def generate_hash(api_key_id: str, secret_key: str) -> str:
+    """Generate SHA-256 hash of the API key ID using the user-provided secret key."""
+    return hmac.new(secret_key.encode(), api_key_id.encode(), hashlib.sha256).hexdigest()
 
-    :return: A Reddit instance, or None.
+def insert_reddit_key(hashed_id: str, reddit_id: str, reddit_key: str):
+    response = (
+        supabase
+        .table('user_data')
+        .insert({
+            'sha_of_key_id': hashed_id,
+            'reddit_id': reddit_id,
+            'reddit_key': reddit_key
+        })
+        .execute()
+    )
+    return response.status_code
+
+def get_reddit_key(input_hash: str):
+    """
+    Retrieve the Reddit key and its associated Reddit ID using the hash of the Reddit ID.
+
+    :param reddit_id: The Reddit ID to look up.
+    :return: A tuple (reddit_id, reddit_key) if found, otherwise None.
     """
     try:
         response = (
             supabase
             .table('user_data')
-            .select('reddit_key')
-            .eq('reddit_id', reddit_id)
+            .select('reddit_id, reddit_key')
+            .eq('sha_of_key_id', input_hash)
             .execute()
         )
         if response.data and len(response.data) > 0:
-            return response.data[0]['reddit_key']
+            return response.data[0]['reddit_id'], response.data[0]['reddit_key']
         return None
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
 
-
-def construct_reddit_instance(client_id, subreddit):
+def construct_reddit_instance(input_hash, subreddit):
     """
     Create a SubredditFetch object.
 
@@ -44,11 +62,12 @@ def construct_reddit_instance(client_id, subreddit):
     :param subreddit: The name of the subreddit.
     :retrun: A SubredditFetch object.
     """
-    reddit_api_key = get_reddit_key(client_id)
-    if reddit_api_key is None:
-        return Response(f"Reddit API key not found for {client_id}", status=404)
+    reddit_api_key_id, reddit_api_key = get_reddit_key(input_hash)
 
-    target_sub = SubredditFetch(subreddit, client_id, reddit_api_key)
+    if reddit_api_key or reddit_api_key_id is None:
+        return Response(f"Reddit API key not found for {input_hash}", status=404)
+
+    target_sub = SubredditFetch(subreddit, reddit_api_key_id, reddit_api_key)
 
     if not target_sub.exists:
         return Response(f"Subreddit {subreddit} does not exist", status=404)

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Reddit Key</title>
+</head>
+<body>
+    <h1>Add Reddit Key</h1>
+    <form action="/add_reddit_key" method="post">
+        <label for="reddit_id">Reddit Key ID:</label>
+        <input type="text" id="reddit_id" name="reddit_id" required><br><br>
+
+        <label for="reddit_key">Reddit Key:</label>
+        <input type="text" id="reddit_key" name="reddit_key" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+</body>
+</html>
