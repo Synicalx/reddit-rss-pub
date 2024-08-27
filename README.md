@@ -65,6 +65,8 @@ So, how do we uniquely identify which keys someone wants to use without having t
 3. We store the above.
 4. The user can then make requests of reddit, using their own API keys, by providing us the hashed output of the key ID, which we then use as the lookup value to locate the keys. For example `$domain/rss/$your_key_id_hash/$subreddit`
 
+This has the added benefit of the user being able to recover their own hash easily if they lose it, so long as they still have access to their keys. 
+
 ## Will it / can it do XYZ
 
 Yes, no, I don't know, maybe. If you can think of a feature that is missing, but that also might be useful (and there's a lot of those) please create an issue or open a PR.
